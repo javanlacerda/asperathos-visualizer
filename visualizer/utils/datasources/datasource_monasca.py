@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import time
 import requests
 import json
 
@@ -24,22 +23,30 @@ import kubernetes as kube
 from visualizer.utils.datasources.datasource_base import Base
 from visualizer.service import api
 
+
 class MonascaDataSource(Base):
 
     def __init__(self, app_id):
-        Base.__init__(self, app_id, api.monasca_datasource_name, api.monasca_datasource_type)
+        Base.__init__(
+            self,
+            app_id,
+            api.monasca_datasource_name,
+            api.monasca_datasource_type)
         # Compute necessary variables
         self.datasource_access = api.monasca_datasource_access
         self.datasource_url = api.monasca_datasource_url
         self.datasource_basic_auth = api.monasca_datasource_basic_auth
         self.datasource_auth_type = api.monasca_datasource_auth_type
         self.datasource_token = api.monasca_datasource_token
-        self.dashboard_path = './visualizer/utils/templates/dashboard-job-monasca.template'
+        self.dashboard_path = './visualizer/utils/\
+            templates/dashboard-job-monasca.template'
         self.image = 'monasca/grafana'
 
-    def create_grafana_datasource(self, user, password, visualizer_ip, node_port):
+    def create_grafana_datasource(
+            self, user, password, visualizer_ip, node_port):
 
-        url = "http://%s:%s@%s:%d/api/datasources" % (user, password, visualizer_ip, node_port)
+        url = "http://%s:%s@%s:%d/api/datasources" % (
+            user, password, visualizer_ip, node_port)
 
         data_ds = {
             "name": self.datasource_name,
@@ -60,12 +67,14 @@ class MonascaDataSource(Base):
         try:
             requests.post(url, data=data, headers=headers)
         except requests.exceptions.ConnectionError:
-            successful_request = False        
+            successful_request = False
         return successful_request
 
-    def create_grafana_dashboard(self, user, password, visualizer_ip, node_port):
+    def create_grafana_dashboard(
+            self, user, password, visualizer_ip, node_port):
 
-        url = "http://%s:%s@%s:%s/api/dashboards/db" % (user, password, visualizer_ip, node_port)
+        url = "http://%s:%s@%s:%s/api/dashboards/db" % (
+            user, password, visualizer_ip, node_port)
 
         opened = open(self.dashboard_path)
 
@@ -82,9 +91,10 @@ class MonascaDataSource(Base):
             successful_request = False
 
         return successful_request
-        
-    def delete_visualizer_resources(self, visualizer_type='grafana', namespace="default"):
-        
+
+    def delete_visualizer_resources(
+            self, visualizer_type='grafana', namespace="default"):
+
         # load kubernetes config
         kube.config.load_kube_config(api.k8s_conf_path)
 
@@ -100,6 +110,8 @@ class MonascaDataSource(Base):
             name=name, namespace=namespace, body=delete)
 
         # Deleting service
-        print("Deleting %s Service for job %s" % (visualizer_type, self.app_id))
+        print(
+            "Deleting %s Service for job %s" %
+            (visualizer_type, self.app_id))
         CoreV1Api.delete_namespaced_service(
             name=name, namespace=namespace, body=delete)

@@ -19,7 +19,7 @@ try:
     # Conf reading
     config = ConfigParser.RawConfigParser()
     config.read('./visualizer.cfg')
-    
+
     """ General configuration """
     address = config.get('general', 'host')
     port = config.getint('general', 'port')
@@ -27,7 +27,6 @@ try:
     datasources = config.get('general', 'datasources').split(',')
     use_debug = config.get('general', 'debug')
     retries = config.getint('general', 'retries')
-
 
     """ Validate if really exists a section to listed plugins """
     for plugin in plugins:
@@ -38,9 +37,9 @@ try:
     if 'k8s-grafana' in plugins:
         k8s_conf_path = config.get('k8s-grafana', 'k8s_conf_path')
         visualizer_type = config.get("k8s-grafana", "visualizer_type")
-        visualizer_ip = config.get("k8s-grafana", "visualizer_ip")  
+        visualizer_ip = config.get("k8s-grafana", "visualizer_ip")
 
-    for datasource in datasources: 
+    for datasource in datasources:
 
         """ Validate if really exists a section to the datasource """
         if datasource != '' and datasource not in config.sections():
@@ -52,17 +51,18 @@ try:
             monasca_datasource_type = config.get("monasca", "type")
             monasca_datasource_url = config.get("monasca", "url")
             monasca_datasource_access = config.get("monasca", "access")
-            monasca_datasource_basic_auth = config.getboolean("monasca", "basic_auth")
+            monasca_datasource_basic_auth = config.getboolean(
+                "monasca", "basic_auth")
             monasca_datasource_auth_type = config.get("monasca", "auth_type")
-            monasca_datasource_token = config.get("monasca", "token")  
-        
+            monasca_datasource_token = config.get("monasca", "token")
+
         """ InfluxDB parameters """
         if 'influxdb' == datasource:
             influxdb_datasource_name = config.get("influxdb", "name")
             influxdb_datasource_type = config.get("influxdb", "type")
             influxdb_datasource_url = config.get("influxdb", "url")
             influxdb_datasource_access = config.get("influxdb", "access")
-            
+
 except Exception as e:
     print "Error: %s" % e.message
     quit()
